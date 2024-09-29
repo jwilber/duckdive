@@ -18,19 +18,17 @@ uv run duckdive -t swells --csv "tides_data.csv"
 
 ## API
 
-```python
-def main(
-    spot_id: str = typer.Argument("5842041f4e65fad6a7708839", help="Surfline spot ID"),
-    days: int = typer.Option(3, help="Number of forecast days"),
-    forecast_type: str = typer.Option("tides", "-t", "--forecast-type", help="Forecast type (must be 'rating', 'conditions', 'swells', 'sunlight', 'wave', 'wind', 'tides', or 'weather')"),
-    interval_hours: float = typer.Option(1, "-i", "--interval-hours", help="Interval hours for forecast"),
-    max_heights: bool = typer.Option(True, "-m", "--max-heights", help="Include max heights in output"),
-    sds: bool = typer.Option(True, "-s", "--sds", help="Use LOTUS forecast engine"),
-    access_token: Optional[str] = typer.Option(None, "-a", "--access-token", help="Access token for premium data"),
-    save_to_duckdb: bool = typer.Option(False, "-d", "--save-to-duckdb", help="Save data to DuckDB"),
-    csv: Optional[str] = typer.Option(None, "--csv", help="Save the data to a local CSV file with the given file name")
-):
-```
+| Field          | Description                                                                                                       |
+| :------------- | :---------------------------------------------------------------------------------------------------------------- |
+| spot_id        | Surfline spot ID (default: 5842041f4e65fad6a7708839).                                                             |
+| days           | Number of forecast days (default: 3).                                                                             |
+| forecast_type  | Forecast type, options include: 'rating', 'conditions', 'swells', 'sunlight', 'wave', 'wind', 'tides', 'weather'. |
+| interval_hours | Interval in hours for forecast data (default: 1).                                                                 |
+| max_heights    | Include maximum heights in the output (default: True).                                                            |
+| sds            | Use the LOTUS forecast engine (default: True).                                                                    |
+| access_token   | Optional access token for premium Surfline data.                                                                  |
+| save_to_duckdb | Save the data directly to DuckDB (default: False).                                                                |
+| csv            | Save the data to a local CSV file if a file name is provided.                                                     |
 
 ## Data Models
 
