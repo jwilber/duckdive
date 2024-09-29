@@ -1,0 +1,39 @@
+[project]
+name = "duckdive"
+version = "0.1.0"
+description = "Query & store surfline data with pandas or duckdb."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.0.0",
+    "pandas>=2.2.3",
+    "pydantic>=2.9.2",
+    "requests>=2.32.3",
+    "typer>=0.12.5",
+]
+
+[project.scripts]
+duckdive = "duckdive:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "isort>=5.13.2",
+    "pre-commit>=3.8.0",
+    "pytest>=8.3.3",
+    "ruff>=0.6.8",
+]
+
+# isort configuration
+[tool.isort]
+profile = "black"
+line_length = 88
+
+# ruff configuration
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "B"]
+ignore = ["E501"]  # Ignore long lines since isort/black will handle formatting
