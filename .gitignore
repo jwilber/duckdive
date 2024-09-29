@@ -1,0 +1,115 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+.pipenv/
+Pipfile.lock
+
+# Pyre type checker
+.pyre/
+
+# Pyright type checker
+.pyright/
+
+# Poetry
+poetry.lock
+
+# Hatch
+.hatch/
+hatch.lock
+
+# Test files
+coverage.xml
+*.cover
+.hypothesis/
+.tox/
+.nox/
+.cache/
+coverage/
+coverage.*.xml
+nosetests.xml
+test_*.log
+tests/__pycache__/
+
+# pytest
+.pytest_cache/
+.cache/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.env.*
+
+# PyCharm / JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VSCode
+.vscode/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# Other config
+*.env
+*.ini
+*.cfg
+*.yaml
+*.yml
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.db
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+*.cab
+
+# Linux
+*~
