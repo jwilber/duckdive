@@ -8,7 +8,28 @@ todo: finish this
 
 [Installation instructions to be added]
 
+
 ## Development
+
+First, clone the repo:
+
+```bash
+git clone https://github.com/jwilber/duckdive.git
+```
+
+Create an environment:
+```bash
+```
+
+Install the module:
+```bash
+pip install -e
+```
+
+Then run the module:
+```bash
+duckdive -t swells --csv "tides_data.csv"
+```
 
 We're using `uv` for development. To get up and running, use the following command:
 
@@ -109,3 +130,9 @@ The api exposes several models.
 | temperature | Optional[float] | Temperature                   |
 | pressure    | Optional[float] | Atmospheric pressure          |
 | condition   | str             | Weather condition description |
+
+
+Reduced dependencies
+More efficient data processing (data stays in DuckDB)
+Better memory usage (no pandas DataFrame intermediary)
+Simpler data pipeline
