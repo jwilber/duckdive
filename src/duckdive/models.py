@@ -1,10 +1,13 @@
+from typing import List, Optional
+
 from pydantic import BaseModel
-from typing import Optional, List
+
 
 # conditions endpoint
 class ForecasterData(BaseModel):
     name: str
     avatar: Optional[str]
+
 
 class ObservationData(BaseModel):
     # timestamp: int
@@ -16,6 +19,7 @@ class ObservationData(BaseModel):
     humanRelation: Optional[str]
     occasionalHeight: Optional[int]
 
+
 class ConditionsData(BaseModel):
     timestamp: int
     forecastDay: str
@@ -25,20 +29,24 @@ class ConditionsData(BaseModel):
     am: Optional[ObservationData]
     pm: Optional[ObservationData]
 
+
 # rating endpoint
 class RatingValueData(BaseModel):
     key: str
     value: Optional[float]
 
+
 class RatingData(BaseModel):
     timestamp: int
     rating: RatingValueData
+
 
 # tide endpoint
 class TideData(BaseModel):
     timestamp: int
     type: str
     height: float
+
 
 # wind endpoint
 class WindData(BaseModel):
@@ -49,13 +57,13 @@ class WindData(BaseModel):
     directionType: Optional[str]
     optimalScore: Optional[int]
 
+
 # weather endpoint
 class WeatherData(BaseModel):
     timestamp: int
     temperature: Optional[float]
     pressure: Optional[float]
     condition: str
-
 
 
 class SurfData(BaseModel):
@@ -66,6 +74,7 @@ class SurfData(BaseModel):
     # raw: Optional[RawSurfData] = None
     # optimalScore: Optional[int] = None
 
+
 class SwellData(BaseModel):
     height: float
     period: float
@@ -75,6 +84,7 @@ class SwellData(BaseModel):
     directionMin: Optional[float] = None
     optimalScore: Optional[int] = None
 
+
 class WaveData(BaseModel):
     timestamp: int
     probability: Optional[float] = None
@@ -82,12 +92,14 @@ class WaveData(BaseModel):
     power: Optional[float] = None
     swells: Optional[List[SwellData]] = None
 
+
 class SunlightData(BaseModel):
     midnight: int
     dawn: int
     sunrise: int
     sunset: int
     dusk: int
+
 
 class SwellDetails(BaseModel):
     height: float
@@ -97,11 +109,13 @@ class SwellDetails(BaseModel):
     direction: Optional[float]
     directionMin: Optional[float]
 
+
 class SwellData(BaseModel):
     timestamp: int
     probability: Optional[float]
     power: Optional[float]
     swells: List[SwellDetails]
+
 
 # FullWaveResponse is now more generic and supports multiple types of data
 class FullResponse(BaseModel):
