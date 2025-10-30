@@ -1,10 +1,16 @@
-import typer
-import pandas as pd
+import json
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Optional
+
 import duckdb
-from typing import Optional
+import pandas as pd
+import typer
 from rich.console import Console
-from .query_surfline import query_surfline
+from rich.progress import Progress, SpinnerColumn, TextColumn
+
 from .api import construct_surfline_api_url
+from .query_surfline import query_surfline
 from .util import create_pretty_table
 
 app = typer.Typer()
@@ -12,7 +18,7 @@ console = Console()
 
 
 @app.command()
-def main(
+def forecast(
     spot_id: str = typer.Argument("5842041f4e65fad6a7708839", help="Surfline spot ID"),
     days: int = typer.Option(3, help="Number of forecast days"),
     forecast_type: str = typer.Option(
@@ -49,7 +55,7 @@ def main(
     )
     print("url here sir", url)
 
-    result = query_surfline(url, save_to_duckdb)
+    result = query_surfline(url, duckdb_file=duckdb)
 
     if isinstance(result, duckdb.DuckDBPyConnection):
         if csv:
