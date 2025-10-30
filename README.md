@@ -8,11 +8,30 @@ Query Surfline surf forecast data from your CLI and save it to csv or DuckDB.
 # Using uv (recommended)
 uv pip install duckdive
 
-# Using pip
-pip install duckdive
+
+## Development
+
+First, clone the repo:
+
+```bash
+git clone https://github.com/jwilber/duckdive.git
 ```
 
-## Quick Start
+Create an environment:
+```bash
+```
+
+Install the module:
+```bash
+pip install -e
+```
+
+Then run the module:
+```bash
+duckdive -t swells --csv "tides_data.csv"
+```
+
+We're using `uv` for development. To get up and running, use the following command:
 
 ```bash
 # Get tide forecast for default spot (El Porto)
@@ -214,32 +233,15 @@ df = con.execute('SELECT * FROM surfline_data').df()
 
 ### Weather
 
-| Field       | Type  | Description                   |
-| ----------- | ----- | ----------------------------- |
-| timestamp   | int   | Timestamp of the weather data |
-| temperature | float | Temperature (°F)              |
-| pressure    | float | Atmospheric pressure          |
-| condition   | str   | Weather condition description |
+| Field       | Type            | Description                   |
+| ----------- | --------------- | ----------------------------- |
+| timestamp   | int             | Timestamp of the weather data |
+| temperature | Optional[float] | Temperature                   |
+| pressure    | Optional[float] | Atmospheric pressure          |
+| condition   | str             | Weather condition description |
 
-## Development
 
-Using `uv` for development:
-
-```bash
-# Install dependencies
-uv sync
-
-# Run locally
-uv run duckdive forecast -t wave
-
-# Run tests
-uv run pytest
-
-# Format and lint
-uv run ruff format .
-uv run ruff check --fix .
-```
-
-## License
-
-MIT
+Reduced dependencies
+More efficient data processing (data stays in DuckDB)
+Better memory usage (no pandas DataFrame intermediary)
+Simpler data pipeline
