@@ -31,9 +31,13 @@ dev-dependencies = [
 [tool.isort]
 profile = "black"
 line_length = 88
+skip_gitignore = true
 
 # ruff configuration
 [tool.ruff]
 line-length = 88
+exclude = [".venv", "dist", "build"]
+
+[tool.ruff.lint]
 select = ["E", "F", "B"]
-ignore = ["E501"]  # Ignore long lines since isort/black will handle formatting
+ignore = ["E501", "B008"]
