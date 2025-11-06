@@ -65,6 +65,7 @@ def forecast(
     csv: Optional[str] = typer.Option(
         None, "--csv", help="Save the data to a local CSV file with the given file name"
     ),
+    verbose: bool = typer.Option(True, "-v", "--verbose", help="Verbose output"),
 ):
     """
     Query the Surfline API for forecast data.
@@ -79,7 +80,7 @@ def forecast(
         forecast_type=forecast_type,
     )
 
-    result = query_surfline(url, duckdb_file=duckdb)
+    result = query_surfline(url, duckdb_file=duckdb, verbose=verbose)
 
     if isinstance(result, pd.DataFrame):
         console.print(create_pretty_table(result.head()))
@@ -128,6 +129,7 @@ def report(
         "--today/--no-today",
         help="Only include data for today's date",
     ),
+    verbose: bool = typer.Option(True, "-v", "--verbose", help="Verbose output"),
 ):
     """
     Generate a daily surf report for multiple spots with combined forecast data.
@@ -197,7 +199,7 @@ def report(
                         access_token=access_token,
                         forecast_type=forecast_type,
                     )
-                    result = query_surfline(url, save_to_duckdb=False, verbose=False)
+                    result = query_surfline(url, duckdb_file=duckdb, verbose=verbose)
                     if isinstance(result, pd.DataFrame) and not result.empty:
                         cols_to_rename = {
                             col: f"{forecast_type}_{col}"
