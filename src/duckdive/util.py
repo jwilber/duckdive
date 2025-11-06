@@ -95,7 +95,7 @@ def format_sunlight_timestamp(timestamp: int) -> str:
     return dt_object.strftime("%Y-%m-%d %I:%M %p")
 
 
-def format_timestamp(unix_timestamp: int, utc_offset: int = 0) -> str:
+def format_timestamp(unix_timestamp: int, utc_offset: int = -8) -> str:
     """
     Convert a Unix timestamp into a human-readable date-time format.
 
