@@ -111,10 +111,10 @@ dmypy.json
 Thumbs.db
 *.cab
 
-# generate files
+# generated data files
 *.csv
 *.json
-
+*.duckdb
 
 # Linux
 *~
