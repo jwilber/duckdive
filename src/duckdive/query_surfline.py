@@ -1,7 +1,6 @@
 import json
 from typing import Optional
 
-import duckdb
 import pandas as pd
 import requests
 import typer
@@ -13,9 +12,7 @@ from .util import format_dataframe
 console = Console()
 
 
-def query_surfline(
-    url: str, duckdb_file: Optional[str] = None, verbose: bool = True
-) -> Optional[pd.DataFrame]:
+def query_surfline(url: str, verbose: bool = True) -> Optional[pd.DataFrame]:
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
         "Accept": "application/json, text/plain, */*",
@@ -93,13 +90,6 @@ def query_surfline(
             if verbose:
                 typer.echo("No data found.")
             return None
-
-        if duckdb_file:
-            con = duckdb.connect(database=duckdb_file)
-            con.execute("CREATE OR REPLACE TABLE surfline_data AS SELECT * FROM df")
-            con.close()
-            if verbose:
-                typer.echo(f"Data saved to {duckdb_file}")
 
         return df
 

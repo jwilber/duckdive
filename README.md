@@ -2,6 +2,8 @@
 
 Query Surfline surf forecast data from your CLI and save it to csv or DuckDB.
 
+![Demo of duckdive CLI in action](/assets/img/readme.gif)
+
 ## Installation
 
 ```bash
@@ -34,6 +36,8 @@ duckdive report --duckdb today.duckdb
 
 Query a single forecast type for a single spot.
 
+![Demo of duckdive forecast](/assets/img/forecast.gif)
+
 ```bash
 # Get 5-day wave forecast
 duckdive forecast -t wave --days 5
@@ -65,6 +69,8 @@ duckdive forecast 5842041f4e65fad6a770881b -t wave
 ### `duckdive report`
 
 Generate a comprehensive surf report with multiple forecast types across multiple spots.
+
+![Demo of duckdive report](/assets/img/report.gif)
 
 ```bash
 # Generate today's report (7am-8pm, simplified view)

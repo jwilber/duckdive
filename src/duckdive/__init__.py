@@ -3,11 +3,10 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional
 
-import duckdb
+import duckdb as ddb
 import pandas as pd
 import typer
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from .api import construct_surfline_api_url
 from .query_surfline import query_surfline
@@ -15,6 +14,16 @@ from .util import create_pretty_table
 
 app = typer.Typer()
 console = Console()
+
+
+def save_to_duckdb(df, duckdb_path):
+    con = ddb.connect(database=duckdb_path)
+    con.execute("CREATE OR REPLACE TABLE surfline_data AS SELECT * FROM df")
+    con.close()
+    console.print(
+        f"[green]Data saved to {duckdb_path}! Query from the CLI via:[/green] "
+        f'[cyan]duckdb {duckdb_path} "SELECT * FROM surfline_data"[/cyan]'
+    )
 
 
 def load_spot_config() -> Dict[str, str]:
@@ -65,7 +74,12 @@ def forecast(
     csv: Optional[str] = typer.Option(
         None, "--csv", help="Save the data to a local CSV file with the given file name"
     ),
-    verbose: bool = typer.Option(True, "-v", "--verbose", help="Verbose output"),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose/--no-verbose",
+        "-v",
+        help="Enable or disable verbose logging",
+    ),
 ):
     """
     Query the Surfline API for forecast data.
@@ -80,13 +94,16 @@ def forecast(
         forecast_type=forecast_type,
     )
 
-    result = query_surfline(url, duckdb_file=duckdb, verbose=verbose)
+    result = query_surfline(url, verbose=verbose)
 
     if isinstance(result, pd.DataFrame):
         console.print(create_pretty_table(result.head()))
         if csv:
             result.to_csv(csv, index=False)
             typer.echo(f"Data saved to {csv}")
+
+        if duckdb:
+            save_to_duckdb(result, duckdb)
     else:
         typer.echo("No data was returned.", err=True)
 
@@ -129,7 +146,12 @@ def report(
         "--today/--no-today",
         help="Only include data for today's date",
     ),
-    verbose: bool = typer.Option(True, "-v", "--verbose", help="Verbose output"),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose/--no-verbose",
+        "-v",
+        help="Enable or disable verbose logging",
+    ),
 ):
     """
     Generate a daily surf report for multiple spots with combined forecast data.
@@ -165,6 +187,7 @@ def report(
         "weather",
     ]
     types_to_fetch = forecast_types if forecast_types else all_forecast_types
+    console.print(f"[yellow]Fetching types: {types_to_fetch}[/yellow]")
 
     for ft in types_to_fetch:
         if ft not in all_forecast_types:
@@ -172,60 +195,50 @@ def report(
             raise typer.Exit(code=1)
 
     all_data = {}
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        console=console,
-    ) as progress:
-        for spot_id in spot_ids:
-            spot_data = {}
-            spot_name = get_spot_name(spot_id, spot_config)
-            task = progress.add_task(
-                f"Fetching data for spot {spot_name}...",
-                total=len(types_to_fetch),
-            )
-            for forecast_type in types_to_fetch:
-                progress.update(
-                    task,
-                    description=f"Fetching {forecast_type} data for spot {spot_name}...",
-                )
-                try:
-                    url = construct_surfline_api_url(
-                        spot_id=spot_id,
-                        days=days,
-                        interval_hours=interval_hours,
-                        max_heights=max_heights,
-                        sds=sds,
-                        access_token=access_token,
-                        forecast_type=forecast_type,
-                    )
-                    result = query_surfline(url, duckdb_file=duckdb, verbose=verbose)
-                    if isinstance(result, pd.DataFrame) and not result.empty:
-                        cols_to_rename = {
-                            col: f"{forecast_type}_{col}"
-                            for col in result.columns
-                            if col not in ["timestamp", "spot_id"]
-                        }
-                        result = result.rename(columns=cols_to_rename)
-                        result["spot_id"] = spot_id
-                        spot_data[forecast_type] = result
-                except Exception as e:
-                    console.print(
-                        f"[red]Error fetching {forecast_type} data for spot {spot_name}: {e}[/red]"
-                    )
-                progress.advance(task)
 
-            if spot_data:
-                merged_df = None
-                for df in spot_data.values():
-                    merged_df = (
-                        df
-                        if merged_df is None
-                        else pd.merge(
-                            merged_df, df, on=["timestamp", "spot_id"], how="outer"
-                        )
+    for spot_id in spot_ids:
+        spot_data = {}
+        spot_name = get_spot_name(spot_id, spot_config)
+
+        console.print(f"\n[bold cyan]Fetching data for spot: {spot_name}[/bold cyan]")
+        for forecast_type in types_to_fetch:
+            console.print(f"[yellow]  → {forecast_type}[/yellow]")
+            try:
+                url = construct_surfline_api_url(
+                    spot_id=spot_id,
+                    days=days,
+                    interval_hours=interval_hours,
+                    max_heights=max_heights,
+                    sds=sds,
+                    access_token=access_token,
+                    forecast_type=forecast_type,
+                )
+                result = query_surfline(url, verbose=verbose)
+                if isinstance(result, pd.DataFrame) and not result.empty:
+                    cols_to_rename = {
+                        col: f"{forecast_type}_{col}"
+                        for col in result.columns
+                        if col not in ["timestamp", "spot_id"]
+                    }
+                    result = result.rename(columns=cols_to_rename)
+                    result["spot_id"] = spot_id
+                    spot_data[forecast_type] = result
+            except Exception as e:
+                console.print(
+                    f"[red]Error fetching {forecast_type} data for spot {spot_name}: {e}[/red]"
+                )
+
+        if spot_data:
+            merged_df = None
+            for df in spot_data.values():
+                merged_df = (
+                    df
+                    if merged_df is None
+                    else pd.merge(
+                        merged_df, df, on=["timestamp", "spot_id"], how="outer"
                     )
-                all_data[spot_id] = merged_df
+                )
+            all_data[spot_id] = merged_df
 
     if all_data:
         final_df = pd.concat(all_data.values(), ignore_index=True)
@@ -322,12 +335,7 @@ def report(
             console.print(f"\n[green]Data saved to {csv}[/green]")
 
         if duckdb:
-            con = duckdb.connect(database=duckdb)
-            con.execute(
-                "CREATE OR REPLACE TABLE surfline_data AS SELECT * FROM final_df"
-            )
-            con.close()
-            console.print(f"\n[green]Data saved to {duckdb}[/green]")
+            save_to_duckdb(final_df, duckdb)
         return final_df
 
     else:
